@@ -1,0 +1,34 @@
+{
+    "doctors": [
+        {
+            "id": "1",
+            "name": "Dr. John Smith",
+            "specialization": "Cardiologist",
+            "experience": "15 years"
+        },
+        {
+            "id": "2",
+            "name": "Dr. Sarah Johnson",
+            "specialization": "Pediatrician",
+            "experience": "10 years"
+        },
+        {
+            "id": "3",
+            "name": "Dr. Michael Chen",
+            "specialization": "Neurologist",
+            "experience": "12 years"
+        },
+        {
+            "id": "4",
+            "name": "Dr. Emily Brown",
+            "specialization": "Dermatologist",
+            "experience": "8 years"
+        },
+        {
+            "id": "5",
+            "name": "Dr. David Wilson",
+            "specialization": "Orthopedic Surgeon",
+            "experience": "20 years"
+        }
+    ]
+} 
