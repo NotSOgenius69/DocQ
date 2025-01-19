@@ -5,11 +5,15 @@ import FirebaseDatabase
 
 struct AnswerQuestionsView: View {
     @State private var questions: [DoctorQuestion] = []
+    @State private var filteredQuestions: [DoctorQuestion] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var selectedQuestion: DoctorQuestion?
     @State private var showingReplySheet = false
     @State private var replyText = ""
+    @State private var selectedSpeciality: String = "All"
+    
+    let specialities = ["All", "Cardiologist", "Pediatrician", "Neurologist", "Dermatologist", "Orthopedic Surgeon"]
     
     var body: some View {
         NavigationView {
@@ -19,6 +23,19 @@ struct AnswerQuestionsView: View {
                         .font(.system(size: 36, weight: .bold))
                         .foregroundColor(.black)
                         .padding(.top, 40)
+                    
+                    // Speciality Picker
+                    Picker("Speciality", selection: $selectedSpeciality) {
+                        ForEach(specialities, id: \.self) { speciality in
+                            Text(speciality)
+                                .tag(speciality)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .padding(.horizontal)
+                    .onChange(of: selectedSpeciality) { _ in
+                        filterQuestions()
+                    }
                     
                     if isLoading {
                         ProgressView()
@@ -32,7 +49,7 @@ struct AnswerQuestionsView: View {
                     } else {
                         ScrollView {
                             VStack(spacing: 16) {
-                                ForEach(questions) { question in
+                                ForEach(filteredQuestions) { question in
                                     QuestionCardView(question: question) {
                                         selectedQuestion = question
                                         showingReplySheet = true
@@ -52,13 +69,22 @@ struct AnswerQuestionsView: View {
                 .sheet(isPresented: $showingReplySheet) {
                     if let question = selectedQuestion {
                         ReplyView(question: question, isPresented: $showingReplySheet) {
-                            // Refresh questions after reply
                             fetchAllQuestions()
                         }
                     }
                 }
             }
             .navigationBarHidden(true)
+        }
+    }
+    
+    private func filterQuestions() {
+        if selectedSpeciality == "All" {
+            filteredQuestions = questions
+        } else {
+            filteredQuestions = questions.filter { question in
+                question.title.lowercased().contains(selectedSpeciality.lowercased())
+            }
         }
     }
     
@@ -111,6 +137,7 @@ struct AnswerQuestionsView: View {
                 
                 group.notify(queue: .main) {
                     self.questions = fetchedQuestions.sorted(by: { $0.timestamp > $1.timestamp })
+                    filterQuestions() // Apply initial filter
                     self.isLoading = false
                 }
             } else {
